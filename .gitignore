@@ -1,3 +1,4 @@
-weapp/lib
-toutiao/lib
+weapp/lib/*
+toutiao/lib/*
+!.gitkeep
 
