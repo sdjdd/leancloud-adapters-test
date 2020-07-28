@@ -1,54 +1,82 @@
-//index.js
-//获取应用实例
-const app = getApp()
+const AV = require('../../lib/av-live-query-core-min')
+const adapters = require('../../lib/leancloud-adapters-weapp')
+
+AV.setAdapters(adapters)
+
+AV.init({
+  appId: '',
+  appKey: '',
+  serverURL: ''
+})
+
+async function testLiveQuery() {
+  let test = new AV.Object('Test')
+  test.set('str', 'test weapp adapters')
+  await test.save()
+  console.log('test object created, id =', test.id)
+
+  let query = new AV.Query('Test')
+  query.equalTo('objectId', test.id)
+  let liveQuery = await query.subscribe()
+
+  return new Promise((resolve, reject) => {
+    const randStr = Math.random().toString().substring(2)
+    liveQuery.on('update', obj => {
+      if (obj.get('str') === randStr) {
+        resolve()
+      } else {
+        reject()
+      }
+    })
+    setTimeout(() => {
+      test.destroy()
+      liveQuery.unsubscribe()
+      reject()
+    }, 3000)
+    test.set('str', randStr)
+    test.save()
+  })
+}
+
+function chooseImage() {
+  return new Promise((resolve, reject) => {
+    wx.chooseImage({
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+async function testUploadFile() {
+  const image = await chooseImage()
+  const path = image.tempFilePaths[0]
+  const file = new AV.File('test-weapp-upload.jpg', {
+    blob: { uri: path }
+  })
+  await file.save()
+  file.destroy()
+}
 
 Page({
-  data: {
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
-  },
-  //事件处理函数
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
+  data: {},
+  testLiveQuery() {
+    wx.showLoading({ title: '正在测试 LiveQuery' })
+    testLiveQuery().then(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '测试成功' })
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '测试失败', icon: 'none' })
     })
   },
-  onLoad: function () {
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse){
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
-        }
-      })
-    }
-  },
-  getUserInfo: function(e) {
-    console.log(e)
-    app.globalData.userInfo = e.detail.userInfo
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
+  testUploadFile() {
+    wx.showLoading({ title: '正在上传文件' })
+    testUploadFile().then(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '上传成功' })
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '上传失败', icon: 'none' })
     })
   }
 })
