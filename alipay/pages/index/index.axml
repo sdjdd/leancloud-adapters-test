@@ -1,0 +1,4 @@
+<view class="container">
+  <button onTap="testUploadFile">测试上传文件</button>
+  <button onTap="testLiveQuery">测试 LiveQuery</button>
+</view>
