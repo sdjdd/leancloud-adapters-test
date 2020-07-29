@@ -46,7 +46,7 @@ async function testUploadFile() {
     const image = await chooseImage()
     const path = image.tempFilePaths[0]
     swan.showLoading({ title: '上传中' })
-    const file = new AV.File('test-baidu-upload', {
+    const file = new AV.File('test-baidu-upload.jpg', {
         blob: { uri: path }
     })
     try {
