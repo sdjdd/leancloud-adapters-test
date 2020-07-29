@@ -1,0 +1,4 @@
+<view style="margin: 0 10px">
+    <button bindtap="testUploadFile">测试上传文件</button>
+    <button bindtap="testLiveQuery">测试 LiveQuery</button>
+</view>

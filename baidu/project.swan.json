@@ -1,0 +1,20 @@
+{
+    "appid": "17767960",
+    "compilation-args": {
+        "common": {
+            "enhance": true,
+            "ignoreTransJs": true
+        }
+    },
+    "host": "baiduboxapp",
+    "projectname": "baidu-test",
+    "setting": {
+        "urlCheck": false
+    },
+    "swan": {
+        "baiduboxapp": {
+            "swanJsVersion": "3.180.15",
+            "extensionJsVersion": "1.13.1"
+        }
+    }
+}
